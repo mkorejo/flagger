@@ -24,9 +24,9 @@ spec:
   {{- if .Values.ingress.tls }}
   tls:
   - hosts:
-    - {{ .Values.aggregatorService.ingress.tls.hostname }}
-    {{- if .Values.aggregatorService.ingress.tls.secretName }}
-    secretName: {{ .Values.aggregatorService.ingress.tls.secretName }}
+    - {{ .Values.ingress.tls.hostname }}
+    {{- if .Values.ingress.tls.secretName }}
+    secretName: {{ .Values.ingress.tls.secretName }}
     {{- end -}}
     - hosts:
         - podinfo.poc.k1analyzer-nonprod.com
