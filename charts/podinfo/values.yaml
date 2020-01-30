@@ -82,7 +82,7 @@ fullnameOverride: ""
 logLevel: info
 backend: # http://backend-podinfo:9898/echo
 backends: []
-color: "#34577c"
+color: blue
 logo:
 message: # UI greetings
 
