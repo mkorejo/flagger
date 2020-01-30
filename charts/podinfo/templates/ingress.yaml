@@ -21,15 +21,8 @@ spec:
             backend:
               serviceName: {{ template "podinfo.fullname" . }}
               servicePort: {{ .Values.service.port }}
-  {{- if .Values.ingress.tls }}
+{{- if .Values.ingress.tls }}
   tls:
-  - hosts:
-    - {{ .Values.ingress.tls.hostname }}
-    {{- if .Values.ingress.tls.secretName }}
-    secretName: {{ .Values.ingress.tls.secretName }}
-    {{- end -}}
-    - hosts:
-        - podinfo.poc.k1analyzer-nonprod.com
-      secretName: podinfo.poc.k1analyzer-nonprod.com-tls
-  {{- end }}
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end -}}
 {{- end }}
