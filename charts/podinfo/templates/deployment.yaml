@@ -45,6 +45,14 @@ spec:
           - name: PODINFO_UI_MESSAGE
             value: {{ .Values.message }}
           {{- end }}
+          {{- if .Values.logo }}
+          - name: PODINFO_UI_LOGO
+            value: {{ .Values.logo }}
+          {{- end }}
+          {{- if .Values.color }}
+          - name: PODINFO_UI_COLOR
+            value: {{ .Values.color }}
+          {{- end }}
           {{- if .Values.backend }}
           - name: PODINFO_BACKEND_URL
             value: {{ .Values.backend }}

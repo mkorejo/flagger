@@ -80,9 +80,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 logLevel: info
-backend: #http://backend-podinfo:9898/echo
+backend: # http://backend-podinfo:9898/echo
 backends: []
-message: #UI greetings
+color: "#34577c"
+logo:
+message: # UI greetings
 
 faults:
   delay: false
