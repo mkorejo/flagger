@@ -9,20 +9,31 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  {{- if .Values.canary.provider }}
+  provider: {{ .Values.canary.provider }}
+  {{- end }}
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name:  {{ template "podinfo.fullname" . }}
+    name: {{ template "podinfo.fullname" . }}
   progressDeadlineSeconds: 60
   autoscalerRef:
     apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
-    name:  {{ template "podinfo.fullname" . }}
+    name: {{ template "podinfo.fullname" . }}
+{{- if .Values.canary.provider }}
+  {{- if eq .Values.canary.provider "nginx" }}
+  ingressRef:
+    apiVersion: extensions/v1beta1
+    kind: Ingress
+    name: {{ template "podinfo.fullname" . }}
+  {{- end }}
+{{- end }}
   service:
     port: {{ .Values.service.port }}
     {{- if .Values.canary.istioIngress.enabled }}
     gateways:
-    -  {{ .Values.canary.istioIngress.gateway }}
+    - {{ .Values.canary.istioIngress.gateway }}
     hosts:
     - {{ .Values.canary.istioIngress.host }}
     {{- end }}

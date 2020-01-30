@@ -20,6 +20,9 @@ hpa:
 
 canary:
   enabled: false
+  # service mesh provider (optional)
+  # can be: kubernetes, istio, linkerd, appmesh, nginx, gloo, supergloo
+  provider:
   # Istio traffic policy tls can be DISABLE or ISTIO_MUTUAL
   istioTLS: DISABLE
   istioIngress:
@@ -54,6 +57,12 @@ canary:
     enabled: false
     # helm tester address
     url: http://flagger-helmtester.kube-system/
+
+ingress:
+  enabled: false
+  annotations: {}
+  hostname:
+  tls: []
 
 resources:
   limits:
