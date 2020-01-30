@@ -17,10 +17,12 @@ spec:
     kind: Deployment
     name: {{ template "podinfo.fullname" . }}
   progressDeadlineSeconds: 60
+{{- if .Values.hpa.enabled }}
   autoscalerRef:
     apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
     name: {{ template "podinfo.fullname" . }}
+{{- end }}
 {{- if .Values.canary.provider }}
   {{- if eq .Values.canary.provider "nginx" }}
   ingressRef:
