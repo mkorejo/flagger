@@ -38,10 +38,10 @@ spec:
     - {{ .Values.canary.istioIngress.gateway }}
     hosts:
     - {{ .Values.canary.istioIngress.host }}
-    {{- end }}
     trafficPolicy:
       tls:
         mode: {{ .Values.canary.istioTLS }}
+    {{- end }}
   canaryAnalysis:
     interval: {{ .Values.canary.analysis.interval }}
     threshold: {{ .Values.canary.analysis.threshold }}
@@ -54,10 +54,19 @@ spec:
     - name: request-duration
       threshold: {{ .Values.canary.thresholds.latency }}
       interval: 1m
-    {{- if or .Values.canary.helmtest.enabled .Values.canary.loadtest.enabled }}
+    {{- if or .Values.canary.acceptancetest.enabled .Values.canary.helmtest.enabled .Values.canary.loadtest.enabled }}
     webhooks:
+      {{- if .Values.canary.acceptancetest.enabled }}
+      - name: "acceptance-test"
+        type: pre-rollout
+        url: {{ .Values.canary.acceptancetest.url }}
+        timeout: 30s
+        metadata:
+          type: "bash"
+          cmd: "curl -sd 'test' http://{{ template "podinfo.fullname" . }}-canary/token | grep token"
+      {{- end }}
       {{- if .Values.canary.helmtest.enabled }}
-      - name: "helm test"
+      - name: "helm-test"
         type: pre-rollout
         url: {{ .Values.canary.helmtest.url }}
         timeout: 3m

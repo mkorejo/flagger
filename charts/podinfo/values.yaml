@@ -23,14 +23,14 @@ canary:
   # service mesh provider (optional)
   # can be: kubernetes, istio, linkerd, appmesh, nginx, gloo, supergloo
   provider:
-  # Istio traffic policy tls can be DISABLE or ISTIO_MUTUAL
-  istioTLS: DISABLE
   istioIngress:
     enabled: false
     # Istio ingress gateway name
     gateway: public-gateway.istio-system.svc.cluster.local
     # external host name eg. podinfo.example.com
     host:
+  # Istio traffic policy TLS mode can be DISABLE or ISTIO_MUTUAL
+  istioTLS: DISABLE
   analysis:
     # schedule interval (default 60s)
     interval: 15s
@@ -49,7 +49,7 @@ canary:
     # maximum req duration P99
     # milliseconds
     latency: 500
-  loadtest:
+  acceptancetest:
     enabled: false
     # load tester address
     url: http://flagger-loadtester.test/
@@ -57,6 +57,10 @@ canary:
     enabled: false
     # helm tester address
     url: http://flagger-helmtester.kube-system/
+  loadtest:
+    enabled: false
+    # load tester address
+    url: http://flagger-loadtester.test/
 
 ingress:
   enabled: false
@@ -71,9 +75,7 @@ resources:
     memory: 32Mi
 
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
 
 nameOverride: ""
