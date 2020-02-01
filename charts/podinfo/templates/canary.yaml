@@ -11,37 +11,35 @@ metadata:
 spec:
   {{- if .Values.canary.provider }}
   provider: {{ .Values.canary.provider }}
-  {{- end }}
-  targetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: {{ template "podinfo.fullname" . }}
-  progressDeadlineSeconds: 60
-{{- if .Values.hpa.enabled }}
-  autoscalerRef:
-    apiVersion: autoscaling/v2beta1
-    kind: HorizontalPodAutoscaler
-    name: {{ template "podinfo.fullname" . }}
-{{- end }}
-{{- if .Values.canary.provider }}
   {{- if eq .Values.canary.provider "nginx" }}
   ingressRef:
     apiVersion: extensions/v1beta1
     kind: Ingress
     name: {{ template "podinfo.fullname" . }}
   {{- end }}
-{{- end }}
+  {{- end }}
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "podinfo.fullname" . }}
+  progressDeadlineSeconds: 60
+  {{- if .Values.hpa.enabled }}
+  autoscalerRef:
+    apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    name: {{ template "podinfo.fullname" . }}
+  {{- end }}
   service:
     port: {{ .Values.service.port }}
-    {{- if .Values.canary.istioIngress.enabled }}
+  {{- if .Values.canary.istioIngress.enabled }}
     gateways:
     - {{ .Values.canary.istioIngress.gateway }}
     hosts:
     - {{ .Values.canary.istioIngress.host }}
+  {{- end }}
     trafficPolicy:
       tls:
         mode: {{ .Values.canary.istioTLS }}
-    {{- end }}
   canaryAnalysis:
     interval: {{ .Values.canary.analysis.interval }}
     threshold: {{ .Values.canary.analysis.threshold }}
@@ -54,7 +52,7 @@ spec:
     - name: request-duration
       threshold: {{ .Values.canary.thresholds.latency }}
       interval: 1m
-    {{- if or .Values.canary.acceptancetest.enabled .Values.canary.helmtest.enabled .Values.canary.loadtest.enabled }}
+  {{- if or .Values.canary.acceptancetest.enabled .Values.canary.helmtest.enabled .Values.canary.loadtest.enabled }}
     webhooks:
       {{- if .Values.canary.acceptancetest.enabled }}
       - name: "acceptance-test"
@@ -99,5 +97,5 @@ spec:
           cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' http://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}/echo"
       {{- end }}
       {{- end }}
-    {{- end }}
+  {{- end }}
 {{- end }}
