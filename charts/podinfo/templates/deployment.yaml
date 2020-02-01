@@ -33,6 +33,9 @@ spec:
           command:
             - ./podinfo
             - --port={{ .Values.service.port }}
+            - --port-metrics={{ .Values.metrics.port }}
+            - --grpc-port={{ .Values.grpc.port }}
+            - --grpc-service-name={{ template "podinfo.fullname" . }}
             - --level={{ .Values.logLevel }}
             - --random-delay={{ .Values.faults.delay }}
             - --random-error={{ .Values.faults.error }}
@@ -60,6 +63,12 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - name: http-metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.grpc.port }}
               protocol: TCP
           livenessProbe:
             exec:
