@@ -35,7 +35,7 @@ canary:
     gateway: public-gateway.istio-system.svc.cluster.local
     # external host name, e.g. podinfo.example.com
     host:
-  # Istio traffic policy TLS mode can be DISABLE or ISTIO_MUTUAL
+  # Istio traffic policy TLS mode, either DISABLE or ISTIO_MUTUAL
   istioTLS: DISABLE
   analysis:
     # schedule interval (default 60s)
