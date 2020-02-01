@@ -75,26 +75,30 @@ spec:
       {{- if .Values.canary.loadtest.enabled }}
       {{- if eq .Values.canary.provider "nginx" }}
       - name: load-test-get
+        type: rollout
         url: {{ .Values.canary.loadtest.url }}
         timeout: 5s
         metadata:
-          cmd: "hey -z 1m -q 5 -c 2 http://{{ .Values.ingress.hostname }}"
-      - name: load-test-post
-        url: {{ .Values.canary.loadtest.url }}
-        timeout: 5s
-        metadata:
-          cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' http://{{ .Values.ingress.hostname }}/echo"
+          cmd: "hey -z 1m -q 5 -c 2 -h2 http://{{ .Values.ingress.hostname }}"
+    # - name: load-test-post
+    #   type: rollout
+    #   url: {{ .Values.canary.loadtest.url }}
+    #   timeout: 5s
+    #   metadata:
+    #     cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' http://{{ .Values.ingress.hostname }}/echo"
       {{ else }}
       - name: load-test-get
+        type: rollout
         url: {{ .Values.canary.loadtest.url }}
         timeout: 5s
         metadata:
           cmd: "hey -z 1m -q 5 -c 2 http://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
-      - name: load-test-post
-        url: {{ .Values.canary.loadtest.url }}
-        timeout: 5s
-        metadata:
-          cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' http://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}/echo"
+    # - name: load-test-post
+    #   type: rollout
+    #   url: {{ .Values.canary.loadtest.url }}
+    #   timeout: 5s
+    #   metadata:
+    #     cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' https://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}/echo"
       {{- end }}
       {{- end }}
   {{- end }}
