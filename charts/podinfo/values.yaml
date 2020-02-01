@@ -11,6 +11,12 @@ service:
   type: ClusterIP
   port: 9898
 
+grpc:
+  port: 9999
+
+metrics:
+  port: 9797
+
 hpa:
   enabled: true
   minReplicas: 2
@@ -27,7 +33,7 @@ canary:
     enabled: false
     # Istio ingress gateway name
     gateway: public-gateway.istio-system.svc.cluster.local
-    # external host name eg. podinfo.example.com
+    # external host name, e.g. podinfo.example.com
     host:
   # Istio traffic policy TLS mode can be DISABLE or ISTIO_MUTUAL
   istioTLS: DISABLE
