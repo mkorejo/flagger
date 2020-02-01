@@ -63,7 +63,7 @@ spec:
         timeout: 30s
         metadata:
           type: "bash"
-          cmd: "curl -sd 'test' http://{{ template "podinfo.fullname" . }}-canary/token | grep token"
+          cmd: "curl -sd 'test' http://{{ template "podinfo.fullname" . }}-canary:{{ .Values.service.port }}/token | grep token"
       {{- end }}
       {{- if .Values.canary.helmtest.enabled }}
       - name: "helm-test"
