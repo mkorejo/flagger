@@ -30,7 +30,8 @@ spec:
     name: {{ template "podinfo.fullname" . }}
   {{- end }}
   service:
-    port: {{ .Values.service.port }}
+    port: 80
+    targetPort: {{ .Values.service.port }}
   {{- if .Values.canary.istioIngress.enabled }}
     gateways:
     - {{ .Values.canary.istioIngress.gateway }}
