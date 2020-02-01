@@ -78,7 +78,7 @@ spec:
         url: {{ .Values.canary.loadtest.url }}
         timeout: 5s
         metadata:
-          cmd: "hey -z 1m -q 5 -c 2 -h2 http://{{ .Values.ingress.hostname }}"
+          cmd: "hey -z 1m -q 5 -c 2  http://{{ .Values.ingress.hostname }}"
       - name: load-test-post
         url: {{ .Values.canary.loadtest.url }}
         timeout: 5s
