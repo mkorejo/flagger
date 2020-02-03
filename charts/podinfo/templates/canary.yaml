@@ -11,12 +11,12 @@ metadata:
 spec:
   {{- if .Values.canary.provider }}
   provider: {{ .Values.canary.provider }}
-  {{- if eq .Values.canary.provider "nginx" }}
+    {{- if eq .Values.canary.provider "nginx" }}
   ingressRef:
     apiVersion: extensions/v1beta1
     kind: Ingress
     name: {{ template "podinfo.fullname" . }}
-  {{- end }}
+    {{- end }}
   {{- end }}
   targetRef:
     apiVersion: apps/v1
@@ -43,8 +43,12 @@ spec:
   canaryAnalysis:
     interval: {{ .Values.canary.analysis.interval }}
     threshold: {{ .Values.canary.analysis.threshold }}
+  {{- if .Values.canary.bluegreen.enabled }}
+    iterations: {{ .Values.canary.analysis.iterations }}
+  {{- else }}
     maxWeight: {{ .Values.canary.analysis.maxWeight }}
     stepWeight: {{ .Values.canary.analysis.stepWeight }}
+  {{- end }}
     metrics:
     - name: request-success-rate
       threshold: {{ .Values.canary.thresholds.successRate }}
@@ -52,50 +56,55 @@ spec:
     - name: request-duration
       threshold: {{ .Values.canary.thresholds.latency }}
       interval: 1m
-  {{- if or .Values.canary.acceptancetest.enabled .Values.canary.helmtest.enabled .Values.canary.loadtest.enabled }}
+  {{- if or .Values.canary.webhooks.acceptancetest.enabled .Values.canary.webhooks.helmtest.enabled .Values.canary.webhooks.loadtest.enabled .Values.canary.webhooks.manualgate.enabled }}
     webhooks:
-      {{- if .Values.canary.acceptancetest.enabled }}
+    {{- if .Values.canary.webhooks.acceptancetest.enabled }}
       - name: "acceptance-test"
         type: pre-rollout
-        url: {{ .Values.canary.acceptancetest.url }}
+        url: {{ .Values.canary.webhooks.urls.loadtester }}
         timeout: 30s
         metadata:
           type: "bash"
           cmd: "curl -sd 'test' http://{{ template "podinfo.fullname" . }}-canary.{{ .Release.Namespace }}:{{ .Values.service.port }}/token | grep token"
-      {{- end }}
-      {{- if .Values.canary.helmtest.enabled }}
+    {{- end }}
+    {{- if .Values.canary.webhooks.helmtest.enabled }}
       - name: "helm-test"
         type: pre-rollout
-        url: {{ .Values.canary.helmtest.url }}
+        url: {{ .Values.canary.webhooks.urls.helmtester }}
         timeout: 3m
         metadata:
           type: "helm"
           cmd: "test {{ .Release.Name }} --cleanup"
-      {{- end }}
-      {{- if .Values.canary.loadtest.enabled }}
+    {{- end }}
+    {{- if .Values.canary.webhooks.loadtest.enabled }}
       {{- if eq .Values.canary.provider "nginx" }}
       - name: load-test-get
-        url: {{ .Values.canary.loadtest.url }}
+        url: {{ .Values.canary.webhooks.urls.loadtester }}
         timeout: 5s
         metadata:
           cmd: "hey -z 1m -q 5 -c 2  http://{{ .Values.ingress.hostname }}"
       - name: load-test-post
-        url: {{ .Values.canary.loadtest.url }}
+        url: {{ .Values.canary.webhooks.urls.loadtester }}
         timeout: 5s
         metadata:
           cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' http://{{ .Values.ingress.hostname }}/echo"
       {{ else }}
       - name: load-test-get
-        url: {{ .Values.canary.loadtest.url }}
+        url: {{ .Values.canary.webhooks.urls.loadtester }}
         timeout: 5s
         metadata:
           cmd: "hey -z 1m -q 5 -c 2 http://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}"
       - name: load-test-post
-        url: {{ .Values.canary.loadtest.url }}
+        url: {{ .Values.canary.webhooks.urls.loadtester }}
         timeout: 5s
         metadata:
           cmd: "hey -z 1m -q 5 -c 2 -m POST -d '{\"test\": true}' https://{{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}/echo"
       {{- end }}
-      {{- end }}
+    {{- end }}
+    {{- if .Values.canary.webhooks.manualgate.enabled -}}
+      - name: gate
+        type: confirm-promotion
+        url: {{ .Values.canary.webhooks.urls.loadtester }}/gate/check
+    {{- end }}
   {{- end }}
 {{- end }}

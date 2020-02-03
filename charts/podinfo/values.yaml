@@ -29,6 +29,8 @@ canary:
   # service mesh provider (optional)
   # can be: kubernetes, istio, linkerd, appmesh, nginx, gloo, supergloo
   provider:
+  bluegreen:
+    enabled: false
   istioIngress:
     enabled: false
     # Istio ingress gateway name
@@ -48,6 +50,8 @@ canary:
     # canary increment step
     # percentage (0-100)
     stepWeight: 5
+    # for blue/green deployments, iterations (interval * iterations is the total analysis duration)
+    iterations: 10
   thresholds:
     # minimum req success rate (non 5xx responses)
     # percentage (0-100)
@@ -55,18 +59,20 @@ canary:
     # maximum req duration P99
     # milliseconds
     latency: 500
-  acceptancetest:
-    enabled: false
-    # load tester address
-    url: http://flagger-loadtester.test/
-  helmtest:
-    enabled: false
-    # helm tester address
-    url: http://flagger-helmtester.kube-system/
-  loadtest:
-    enabled: false
-    # load tester address
-    url: http://flagger-loadtester.test/
+  webhooks:
+    acceptancetest:
+      enabled: false
+    helmtest:
+      enabled: false
+    loadtest:
+      enabled: false
+    manualgate:
+      enabled: false
+    urls:
+      # helm tester address
+      helmtester: http://flagger-helmtester.kube-system/
+      # load tester address
+      loadtester: http://flagger-loadtester.test/
 
 ingress:
   enabled: false
