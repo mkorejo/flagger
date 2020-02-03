@@ -69,6 +69,7 @@ canary:
     manualgate:
       enabled: false
     urls:
+      # trailing slash is required
       # helm tester address
       helmtester: http://flagger-helmtester.kube-system/
       # load tester address
