@@ -104,7 +104,7 @@ spec:
     {{- if .Values.canary.webhooks.manualgate.enabled -}}
       - name: gate
         type: confirm-promotion
-        url: {{ .Values.canary.webhooks.urls.loadtester }}gate/halt
+        url: {{ .Values.canary.webhooks.urls.loadtester }}gate/check
     {{- end }}
   {{- end }}
 {{- end }}
